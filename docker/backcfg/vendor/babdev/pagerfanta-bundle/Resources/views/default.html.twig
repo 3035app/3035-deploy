@@ -1,0 +1,17 @@
+{%- extends '@Pagerfanta/default.html.twig' -%}
+
+{%- block previous_page_message -%}
+    {%- if options['prev_message'] is defined -%}
+        {{- options['prev_message'] -}}
+    {%- else -%}
+        {{- 'previous'|trans([], 'pagerfanta') -}}
+    {%- endif -%}
+{%- endblock previous_page_message -%}
+
+{%- block next_page_message -%}
+    {%- if options['next_message'] is defined -%}
+        {{- options['next_message'] -}}
+    {%- else -%}
+        {{- 'next'|trans([], 'pagerfanta') -}}
+    {%- endif -%}
+{%- endblock next_page_message -%}

@@ -1,0 +1,13 @@
+export const environment = {
+  name: 'production',
+  production: true,
+  version: '1.8.6',
+  rollbar_key: '',
+  date_format: 'DD MM YY HH:mm:ss',
+  api: {
+    client_id:     '751d1ebb77bc93002a32066d484fda997c35c090b4729d05',
+    client_secret: 'a3ccd727fc28823df6702a503e16add5a296630643b426aa',
+    host:          'https://app.admin.pialab.io',
+    token_path:    '/oauth/v2/token'
+  },
+};

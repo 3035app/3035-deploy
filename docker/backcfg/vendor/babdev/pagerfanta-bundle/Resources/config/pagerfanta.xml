@@ -1,0 +1,91 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Event Listeners -->
+        <service id="pagerfanta.event_listener.convert_not_valid_max_per_page_to_not_found" class="BabDev\PagerfantaBundle\EventListener\ConvertNotValidMaxPerPageToNotFoundListener" public="false">
+            <!-- conditionally tagged based on the bundle configuration -->
+        </service>
+
+        <service id="pagerfanta.event_listener.convert_not_valid_current_page_to_not_found" class="BabDev\PagerfantaBundle\EventListener\ConvertNotValidCurrentPageToNotFoundListener" public="false">
+            <!-- conditionally tagged based on the bundle configuration -->
+        </service>
+
+        <!-- Route Generator Factory -->
+        <service id="pagerfanta.route_generator_factory" class="BabDev\PagerfantaBundle\RouteGenerator\RequestAwareRouteGeneratorFactory" public="true">
+            <argument type="service" id="router" />
+            <argument type="service" id="request_stack" />
+        </service>
+        <service id="BabDev\PagerfantaBundle\RouteGenerator\RouteGeneratorFactoryInterface" alias="pagerfanta.route_generator_factory" />
+        <service id="Pagerfanta\RouteGenerator\RouteGeneratorFactoryInterface" alias="pagerfanta.route_generator_factory" />
+
+        <!-- Pagerfanta Views -->
+        <service id="pagerfanta.view.default" class="Pagerfanta\View\DefaultView" public="false">
+            <tag name="pagerfanta.view" alias="default" />
+        </service>
+
+        <service id="pagerfanta.view.default_translated" class="BabDev\PagerfantaBundle\View\DefaultTranslatedView" public="false">
+            <argument type="service" id="pagerfanta.view.default" />
+            <argument type="service" id="translator" />
+            <tag name="pagerfanta.view" alias="default_translated" />
+            <!-- deprecated service -->
+        </service>
+
+        <service id="pagerfanta.view.semantic_ui" class="Pagerfanta\View\SemanticUiView" public="false">
+            <tag name="pagerfanta.view" alias="semantic_ui" />
+        </service>
+
+        <service id="pagerfanta.view.semantic_ui_translated" class="BabDev\PagerfantaBundle\View\SemanticUiTranslatedView" public="false">
+            <argument type="service" id="pagerfanta.view.semantic_ui" />
+            <argument type="service" id="translator" />
+            <tag name="pagerfanta.view" alias="semantic_ui_translated" />
+            <!-- deprecated service -->
+        </service>
+
+        <service id="pagerfanta.view.twitter_bootstrap" class="Pagerfanta\View\TwitterBootstrapView" public="false">
+            <tag name="pagerfanta.view" alias="twitter_bootstrap" />
+        </service>
+
+        <service id="pagerfanta.view.twitter_bootstrap_translated" class="BabDev\PagerfantaBundle\View\TwitterBootstrapTranslatedView" public="false">
+            <argument type="service" id="pagerfanta.view.twitter_bootstrap" />
+            <argument type="service" id="translator" />
+            <tag name="pagerfanta.view" alias="twitter_bootstrap_translated" />
+            <!-- deprecated service -->
+        </service>
+
+        <service id="pagerfanta.view.twitter_bootstrap3" class="Pagerfanta\View\TwitterBootstrap3View" public="false">
+            <tag name="pagerfanta.view" alias="twitter_bootstrap3" />
+        </service>
+
+        <service id="pagerfanta.view.twitter_bootstrap3_translated" class="BabDev\PagerfantaBundle\View\TwitterBootstrap3TranslatedView" public="false">
+            <argument type="service" id="pagerfanta.view.twitter_bootstrap3" />
+            <argument type="service" id="translator" />
+            <tag name="pagerfanta.view" alias="twitter_bootstrap3_translated" />
+            <!-- deprecated service -->
+        </service>
+
+        <service id="pagerfanta.view.twitter_bootstrap4" class="Pagerfanta\View\TwitterBootstrap4View" public="false">
+            <tag name="pagerfanta.view" alias="twitter_bootstrap4" />
+        </service>
+
+        <service id="pagerfanta.view.twitter_bootstrap4_translated" class="BabDev\PagerfantaBundle\View\TwitterBootstrap4TranslatedView" public="false">
+            <argument type="service" id="pagerfanta.view.twitter_bootstrap4" />
+            <argument type="service" id="translator" />
+            <tag name="pagerfanta.view" alias="twitter_bootstrap4_translated" />
+            <!-- deprecated service -->
+        </service>
+
+        <service id="pagerfanta.view.twitter_bootstrap5" class="Pagerfanta\View\TwitterBootstrap5View" public="false">
+            <tag name="pagerfanta.view" alias="twitter_bootstrap5" />
+        </service>
+
+        <!-- View Factory -->
+        <service id="pagerfanta.view_factory" class="Pagerfanta\View\ViewFactory" public="true" />
+        <service id="Pagerfanta\View\ViewFactory" alias="pagerfanta.view_factory" />
+        <service id="Pagerfanta\View\ViewFactoryInterface" alias="pagerfanta.view_factory" />
+    </services>
+
+</container>

@@ -1,0 +1,12 @@
+DO
+$do$
+BEGIN
+   IF EXISTS (
+      SELECT FROM pg_catalog.pg_roles
+      WHERE  rolname = 'user_pialab') THEN
+      RAISE NOTICE 'Role "user_pialab" already exists. Skipping.';
+   ELSE
+      CREATE ROLE user_pialab SUPERUSER LOGIN PASSWORD 'password_pialab';
+   END IF;
+END
+$do$;
