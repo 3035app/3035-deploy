@@ -15,15 +15,22 @@ ENV env_su_password=$su_password
 ENV env_su_email=$su_email
 ENV env_smtp=$smtp
 
-### SYSTEM ###
+#-------------------------------------------------------------------------------------------------#
+# SYSTEM                                                                                          #
+#-------------------------------------------------------------------------------------------------#
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y apt-utils apt-transport-https lsb-release \
       ca-certificates net-tools lsof wget sudo less git curl build-essential unzip gnupg nano \
+      apache2  \
     && apt-get autoremove -y \
     && apt-get clean
 
-### BACK ###
+RUN a2dissite 000-default
+
+#-------------------------------------------------------------------------------------------------#
+# BACK                                                                                            #
+#-------------------------------------------------------------------------------------------------#
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y php${PHP_VER} php${PHP_VER}-cli \
@@ -31,7 +38,7 @@ RUN apt-get update \
       php${PHP_VER}-gd php${PHP_VER}-intl php${PHP_VER}-sqlite3 php${PHP_VER}-gmp \
       php${PHP_VER}-geoip php${PHP_VER}-mbstring php${PHP_VER}-redis php${PHP_VER}-xml \
       php${PHP_VER}-zip php${PHP_VER}-xdebug \
-    && apt-get install -y apache2 libapache2-mod-php${PHP_VER} php${PHP_VER}-pgsql \
+    && apt-get install -y libapache2-mod-php${PHP_VER} php${PHP_VER}-pgsql \
       php${PHP_VER}-cli php${PHP_VER}-mbstring php${PHP_VER}-json php${PHP_VER}-xml \
       php${PHP_VER}-zip php${PHP_VER}-curl php-symfony-console \
     && apt-get upgrade -y \
@@ -59,8 +66,11 @@ COPY back/ /var/www/pialab-back/
 COPY docker/backcfg/pialab-back.conf /etc/apache2/sites-available/
 RUN mkdir -p --mode=777 /var/www/pialab-back/var
 
+RUN a2ensite pialab-back
+
 # TODO: issue on libs versions -- composer install and update postponed until Sf is upgraded
-# RUN curl -sS https://getcomposer.org/installer | php -- --version=1.10.25 --install-dir=/usr/local/bin --filename=composer \
+# RUN curl -sS https://getcomposer.org/installer \
+#    | php -- --version=1.10.25 --install-dir=/usr/local/bin --filename=composer \
 #    && chmod 755 /usr/local/bin/composer
 # RUN cd /var/www/pialab-back/ && composer install --no-dev
 # RUN cd /var/www/pialab-back/ && composer update --no-dev
@@ -74,15 +84,19 @@ COPY docker/backcfg/entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-### FRONT ###
+#-------------------------------------------------------------------------------------------------#
+# FRONT                                                                                           #
+#-------------------------------------------------------------------------------------------------#
 
 RUN apt-get update \
   && apt-get install --no-install-recommends -y npm \
-  && apt-get autoremove -y
+  && apt-get autoremove -y \
   && apt-get clean
 
 COPY front/ /var/www/pialab-front/
 COPY docker/frontcfg/pialab-front.conf /etc/apache2/sites-available/
+
+RUN a2ensite pialab-front
 
 WORKDIR /var/www/pialab-front/
 
@@ -92,9 +106,11 @@ RUN npm clean-install
 
 RUN npm run build
 
-### EXPOSE & SERVE ###
+#-------------------------------------------------------------------------------------------------#
+# EXPOSE & SERVE                                                                                  #
+#-------------------------------------------------------------------------------------------------#
 
-EXPOSE 80/tcp
+EXPOSE 80
 EXPOSE 4200
 
 CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]

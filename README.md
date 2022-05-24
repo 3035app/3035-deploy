@@ -10,19 +10,17 @@ pialab :
 
 ## Déploiement et montée en version du système
 
-Lors du déploiement initial, ou pour une montée en version du système, suivre les étapes suivantes,
+Lors du déploiement initial, ou pour une montée en version du système, suivre les étapes suivantes
 en étant positionné dans le répertoire dédié :
 
 * `cd pialab`
 
 Dans le cas d'une montée en version, stopper l'exécution en cours et supprimer le conteneur :   
 
-* obtenir l'ID du conteneur Pialab :   
-  `docker ps`
 * stopper le conteneur :   
-  `docker stop [CONTAINER ID]`
+  `docker stop pialab`
 * supprimer le conteneur :   
-  `docker rm [CONTAINER ID]`
+  `docker rm pialab`
 
 Obtenir le code à jour du projet (_front_ et _back_) en veillant à bien préciser le nom de la
 branche transmise par l'équipe Pialab :
