@@ -8,12 +8,16 @@ ARG su_username=test
 ARG su_password=test
 ARG su_email=test@test.tld
 ARG smtp=smtp://127.0.0.1:1025
+ARG client_id
+ARG client_secret
 
 ENV env_tenant=$tenant
 ENV env_su_username=$su_username
 ENV env_su_password=$su_password
 ENV env_su_email=$su_email
 ENV env_smtp=$smtp
+ENV env_client_id=$client_id
+ENV env_client_secret=$client_secret
 
 #-------------------------------------------------------------------------------------------------#
 # SYSTEM                                                                                          #
@@ -27,6 +31,8 @@ RUN apt-get update \
     && apt-get clean
 
 RUN a2dissite 000-default
+
+SHELL ["/bin/bash", "-c"]
 
 #-------------------------------------------------------------------------------------------------#
 # BACK                                                                                            #
@@ -78,11 +84,9 @@ RUN a2ensite pialab-back
 COPY docker/backcfg/vendor/ /var/www/pialab-back/vendor
 
 COPY docker/backcfg/.env /var/www/pialab-back
+RUN sed -i 's:^MAILER_URL=.*:MAILER_URL='"${env_smtp//:/\\:}"':' /var/www/pialab-back/.env
 
 COPY docker/backcfg/create_role.psql /
-COPY docker/backcfg/entrypoint.sh /
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
 
 #-------------------------------------------------------------------------------------------------#
 # FRONT                                                                                           #
@@ -98,6 +102,11 @@ COPY docker/frontcfg/pialab-front.conf /etc/apache2/sites-available/
 
 RUN a2ensite pialab-front
 
+COPY docker/frontcfg/environment.ts /var/www/pialab-front/src/environments
+RUN sed -i 's/^.*tenant:.*/tenant: '"'$env_tenant'"'/' /var/www/pialab-front/src/environments/environment.ts
+RUN sed -i 's/^.*client_id:.*/client_id: '"'$env_client_id'"',/' /var/www/pialab-front/src/environments/environment.ts
+RUN sed -i 's/^.*client_secret:.*/client_secret: '"'$env_client_secret'"',/' /var/www/pialab-front/src/environments/environment.ts
+
 WORKDIR /var/www/pialab-front/
 
 RUN npm install -g @angular/cli
@@ -109,6 +118,10 @@ RUN npm run build
 #-------------------------------------------------------------------------------------------------#
 # EXPOSE & SERVE                                                                                  #
 #-------------------------------------------------------------------------------------------------#
+
+COPY docker/entrypoint.sh /
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 80
 EXPOSE 4200

@@ -11,8 +11,8 @@ export const environment = {
   api: {
     client_id:     '',
     client_secret: '',
-    host:          'https://backend.url',
+    host:          'http://localhost:8000',
     token_path:    '/oauth/v2/token'
   },
-  tenant: 'sncf'
+  tenant: ''
 };
