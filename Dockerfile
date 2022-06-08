@@ -8,6 +8,8 @@ ARG su_username=test
 ARG su_password=test
 ARG su_email=test@test.tld
 ARG smtp=smtp://127.0.0.1:1025
+ARG front=http://localhost:4200
+ARG back=http://localhost:8000
 ARG client_id
 ARG client_secret
 
@@ -16,6 +18,8 @@ ENV env_su_username=$su_username
 ENV env_su_password=$su_password
 ENV env_su_email=$su_email
 ENV env_smtp=$smtp
+ENV env_front=$front
+ENV env_back=$back
 ENV env_client_id=$client_id
 ENV env_client_secret=$client_secret
 
@@ -104,6 +108,7 @@ RUN a2ensite pialab-front
 
 COPY docker/frontcfg/environment.ts /var/www/pialab-front/src/environments
 RUN sed -i 's/^.*tenant:.*/tenant: '"'$env_tenant'"'/' /var/www/pialab-front/src/environments/environment.ts
+RUN sed -i 's/^.*host:.*/host: '"'$env_back'"',/' /var/www/pialab-front/src/environments/environment.ts
 RUN sed -i 's/^.*client_id:.*/client_id: '"'$env_client_id'"',/' /var/www/pialab-front/src/environments/environment.ts
 RUN sed -i 's/^.*client_secret:.*/client_secret: '"'$env_client_secret'"',/' /var/www/pialab-front/src/environments/environment.ts
 
