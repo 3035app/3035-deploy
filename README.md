@@ -184,6 +184,8 @@ Stopper l'exécution en cours et supprimer le conteneur, et supprimer le code so
 
 * `docker stop pialab`
 * `docker rm pialab`
+* `docker container prune`
+* `docker image prune`
 * `rm -Rf ./back`
 * `rm -Rf ./front`
 
@@ -219,7 +221,8 @@ docker build . \
   --build-arg back=[BACK DOMAIN] \
   --build-arg client_id=[CLIENT ID] \
   --build-arg client_secret=[CLIENT SECRET] \
-  -t pialab
+  -t pialab \
+  --no-cache=true
 ```
 
 Lancer le conteneur piaLab :
