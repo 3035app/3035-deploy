@@ -38,6 +38,15 @@ cours du déploiement :
   le nom de domaine pour accéder au _front_ (par défaut **http://localhost:4200**)
 * **[BACK DOMAIN]** :   
   le nom de domaine pour accéder au _back_ (par défaut **http://localhost:8000**)
+* **[SSO URL]** :  
+  l'URL du serveur SSO
+* **[SSO CONNECT ID]** :   
+  l'identifiant de connexion au serveur SSO
+* **[SSO CONNECT SECRET]** :  
+  la clé secrète de connexion au serveur SSO
+* **[SSO CALLBACK]** :  
+  l'URL de retour après l'identification SSO
+
 
 Concernant les noms de domaine, se reporter à la section **Exposition du système** ci-dessous pour
 plus de détails.
@@ -99,6 +108,10 @@ docker build . \
   --build-arg smtp=[SMTP CONNECTION] \
   --build-arg front=[FRONT DOMAIN] \
   --build-arg back=[BACK DOMAIN] \
+  --build-arg sso_url=[SSO URL] \
+  --build-arg sso_connect_id=[SSO CONNECT ID] \
+  --build-arg sso_connect_secret=[SSO CONNECT SECRET] \
+  --build-arg sso_callback=[SSO CALLBACK] \
   -t pialab
 ```
 
@@ -142,6 +155,10 @@ docker build . \
   --build-arg smtp=[SMTP CONNECTION] \
   --build-arg front=[FRONT DOMAIN] \
   --build-arg back=[BACK DOMAIN] \
+  --build-arg sso_url=[SSO URL] \
+  --build-arg sso_connect_id=[SSO CONNECT ID] \
+  --build-arg sso_connect_secret=[SSO CONNECT SECRET] \
+  --build-arg sso_callback=[SSO CALLBACK] \
   --build-arg client_id=[CLIENT ID] \
   --build-arg client_secret=[CLIENT SECRET] \
   -t pialab
@@ -219,6 +236,10 @@ docker build . \
   --build-arg smtp=[SMTP CONNECTION] \
   --build-arg front=[FRONT DOMAIN] \
   --build-arg back=[BACK DOMAIN] \
+  --build-arg sso_url=[SSO URL] \
+  --build-arg sso_connect_id=[SSO CONNECT ID] \
+  --build-arg sso_connect_secret=[SSO CONNECT SECRET] \
+  --build-arg sso_callback=[SSO CALLBACK] \
   --build-arg client_id=[CLIENT ID] \
   --build-arg client_secret=[CLIENT SECRET] \
   -t pialab \
