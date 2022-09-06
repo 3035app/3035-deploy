@@ -14,5 +14,10 @@ export const environment = {
     host:          'http://localhost:8000',
     token_path:    '/oauth/v2/token'
   },
+  sncf: {
+    callback_url: '',
+    connect_url: '',
+    connect_id: ''
+  },
   tenant: ''
 };

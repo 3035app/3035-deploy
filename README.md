@@ -1,14 +1,22 @@
 # PIALAB - Procédure de déploiement en production
 
+## Introduction
+
+La procédure ci-dessous permet d'installer les composantes du système PiaLab (base de données,
+application "back" d'administration et API, application "front") sur un serveur unique.
+
 ## Prérequis
 
-Les composantes systèmes suivantes doivent être installées sur la machine hôte :
+Configurer un serveur Linux, préférablement Debian 11, et assurez-vous de pouvoir vous connecter
+avec l'utilisateur **root** (ou bien un utilisateur _sudoer_).
+
+Les composantes systèmes suivantes doivent être installées sur le serveur hôte :
 
 * git
 * docker
 
 De plus vous devez avoir un accès SSH valide au dépôt Git de PiaLab ; consulter l'équipe PiaLab
-en cas de doute ou pour transmettre votre clé publique.
+en cas de doute ou pour obtenir votre compte ou transmettre votre clé publique.
 
 Vous devez par ailleurs avoir à disposition les informations suivantes, qui seront nécessaires au
 cours du déploiement :
@@ -26,6 +34,22 @@ cours du déploiement :
 * **[SMTP CONNECTION]** :   
   l'URI du serveur SMTP utilisé pour relayer l'envoi de courriels par le système, au format
   `smtp://[USER]:[PASSWORD]@[DOMAIN]:[PORT]`
+* **[FRONT DOMAIN]** :   
+  le nom de domaine pour accéder au _front_ (par défaut **http://localhost:4200**)
+* **[BACK DOMAIN]** :   
+  le nom de domaine pour accéder au _back_ (par défaut **http://localhost:8000**)
+* **[SSO URL]** :  
+  l'URL du serveur SSO
+* **[SSO CONNECT ID]** :   
+  l'identifiant de connexion au serveur SSO
+* **[SSO CONNECT SECRET]** :  
+  la clé secrète de connexion au serveur SSO
+* **[SSO CALLBACK]** :  
+  l'URL de retour après l'identification SSO
+
+
+Concernant les noms de domaine, se reporter à la section **Exposition du système** ci-dessous pour
+plus de détails.
 
 
 ## Déploiement initial
@@ -33,11 +57,23 @@ cours du déploiement :
 Lors du déploiement initial, il est nécessaire d'obtenir le code du présent projet (PiaLab Deploy)
 dans un répertoire racine (ici `pialab`) :
 
+Soit via SSH si votre clé publique a été enregistrée sur le dépôt :
+
 ```
 git clone ssh://git@git.pialab.io:2222/pialab/deploy.git \
   --single-branch \
   --depth 1 \
-  --branch master
+  --branch master \
+  pialab
+```
+
+Soit par HTTP si vous posséder un compte utilisateur sur le dépôt :
+
+```
+git clone https://git.pialab.io/pialab/deploy.git \
+  --single-branch \
+  --depth 1 \
+  --branch master \
   pialab
 ```
 
@@ -70,6 +106,12 @@ docker build . \
   --build-arg su_password=[SUPER USER PASSWORD] \
   --build-arg su_email=[SUPER USER EMAIL] \
   --build-arg smtp=[SMTP CONNECTION] \
+  --build-arg front=[FRONT DOMAIN] \
+  --build-arg back=[BACK DOMAIN] \
+  --build-arg sso_url=[SSO URL] \
+  --build-arg sso_connect_id=[SSO CONNECT ID] \
+  --build-arg sso_connect_secret=[SSO CONNECT SECRET] \
+  --build-arg sso_callback=[SSO CALLBACK] \
   -t pialab
 ```
 
@@ -91,7 +133,7 @@ docker exec -it pialab \
   /var/www/pialab-back/bin/console \
     pia:application:create \
     --name [TENANT CODE] \
-    --url http://localhost:4200
+    --url [FRONT DOMAIN]
 ```
 
 Prendre note des clés affichées **[CLIENT ID]** et **[CLIENT SECRET]**.
@@ -111,6 +153,12 @@ docker build . \
   --build-arg su_password=[SUPER USER PASSWORD] \
   --build-arg su_email=[SUPER USER EMAIL] \
   --build-arg smtp=[SMTP CONNECTION] \
+  --build-arg front=[FRONT DOMAIN] \
+  --build-arg back=[BACK DOMAIN] \
+  --build-arg sso_url=[SSO URL] \
+  --build-arg sso_connect_id=[SSO CONNECT ID] \
+  --build-arg sso_connect_secret=[SSO CONNECT SECRET] \
+  --build-arg sso_callback=[SSO CALLBACK] \
   --build-arg client_id=[CLIENT ID] \
   --build-arg client_secret=[CLIENT SECRET] \
   -t pialab
@@ -153,6 +201,8 @@ Stopper l'exécution en cours et supprimer le conteneur, et supprimer le code so
 
 * `docker stop pialab`
 * `docker rm pialab`
+* `docker container prune`
+* `docker image prune`
 * `rm -Rf ./back`
 * `rm -Rf ./front`
 
@@ -184,9 +234,16 @@ docker build . \
   --build-arg su_password=[SUPER USER PASSWORD] \
   --build-arg su_email=[SUPER USER EMAIL] \
   --build-arg smtp=[SMTP CONNECTION] \
+  --build-arg front=[FRONT DOMAIN] \
+  --build-arg back=[BACK DOMAIN] \
+  --build-arg sso_url=[SSO URL] \
+  --build-arg sso_connect_id=[SSO CONNECT ID] \
+  --build-arg sso_connect_secret=[SSO CONNECT SECRET] \
+  --build-arg sso_callback=[SSO CALLBACK] \
   --build-arg client_id=[CLIENT ID] \
   --build-arg client_secret=[CLIENT SECRET] \
-  -t pialab
+  -t pialab \
+  --no-cache=true
 ```
 
 Lancer le conteneur piaLab :
@@ -210,6 +267,54 @@ La composante _front_ du système Pialab écoute sur le port 4200, donc l'URL ht
 Le déploiement peut être complété par l'installation d'un serveur web sur la machine hôte,
 configuré avec deux "virtual host proxy" respectivement pour les composantes _back_ et _front_.
 
+Exemple de configuration avec le serveur web **Nginx**, le domaine principal **mondomaine.tld**, et
+les sous-domaines **pialab** et **admin.pialab** respectivement pour le _front_ et le _back_ :
+
+```
+server {
+    listen 80;
+    server_name admin.pialab.mondomaine.tld;
+
+    gzip on;
+
+    # Proxy pass to docker
+    location / {
+        expires -1;
+        proxy_pass_header Server;
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 10;
+        proxy_read_timeout 100;
+        proxy_pass http://localhost:8000; # Docker
+    }
+}
+
+server {
+    listen 80;
+    server_name pialab.mondomaine.tld;
+
+    gzip on;
+
+    # Proxy pass to docker
+    location / {
+        expires -1;
+        proxy_pass_header Server;
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 10;
+        proxy_read_timeout 100;
+        proxy_pass http://localhost:4200; # Docker
+    }
+}
+```
 
 ## Sauvegarde des données
 

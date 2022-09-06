@@ -8,6 +8,12 @@ ARG su_username=test
 ARG su_password=test
 ARG su_email=test@test.tld
 ARG smtp=smtp://127.0.0.1:1025
+ARG front=http://localhost:4200
+ARG back=http://localhost:8000
+ARG sso_url
+ARG sso_connect_id
+ARG sso_connect_secret
+ARG sso_callback
 ARG client_id
 ARG client_secret
 
@@ -16,6 +22,12 @@ ENV env_su_username=$su_username
 ENV env_su_password=$su_password
 ENV env_su_email=$su_email
 ENV env_smtp=$smtp
+ENV env_front=$front
+ENV env_back=$back
+ENV env_sso_url=$sso_url
+ENV env_sso_connect_id=$sso_connect_id
+ENV env_sso_connect_secret=$sso_connect_secret
+ENV env_sso_callback=$sso_callback
 ENV env_client_id=$client_id
 ENV env_client_secret=$client_secret
 
@@ -84,7 +96,11 @@ RUN a2ensite pialab-back
 COPY docker/backcfg/vendor/ /var/www/pialab-back/vendor
 
 COPY docker/backcfg/.env /var/www/pialab-back
+RUN sed -i 's:^CORS_ALLOW_ORIGIN=.*:CORS_ALLOW_ORIGIN=^'"${env_front//:/\\:}"'*$:' /var/www/pialab-back/.env
 RUN sed -i 's:^MAILER_URL=.*:MAILER_URL='"${env_smtp//:/\\:}"':' /var/www/pialab-back/.env
+RUN sed -i 's:^SNCF_CONNECT_URL=.*:SNCF_CONNECT_URL='"${env_sso_url//:/\\:}"':' /var/www/pialab-back/.env
+RUN sed -i 's/^.*SNCF_CONNECT_ID=.*/SNCF_CONNECT_ID='$env_sso_connect_id'/' /var/www/pialab-back/.env
+RUN sed -i 's/^.*SNCF_CONNECT_SECRET=.*/SNCF_CONNECT_SECRET='$env_sso_connect_secret'/' /var/www/pialab-back/.env
 
 COPY docker/backcfg/create_role.psql /
 
@@ -104,8 +120,12 @@ RUN a2ensite pialab-front
 
 COPY docker/frontcfg/environment.ts /var/www/pialab-front/src/environments
 RUN sed -i 's/^.*tenant:.*/tenant: '"'$env_tenant'"'/' /var/www/pialab-front/src/environments/environment.ts
+RUN sed -i 's#^.*host:.*#host: '"'${env_back//:/\\:}'"',#' /var/www/pialab-front/src/environments/environment.ts
 RUN sed -i 's/^.*client_id:.*/client_id: '"'$env_client_id'"',/' /var/www/pialab-front/src/environments/environment.ts
 RUN sed -i 's/^.*client_secret:.*/client_secret: '"'$env_client_secret'"',/' /var/www/pialab-front/src/environments/environment.ts
+RUN sed -i 's#^.*callback_url:.*#callback_url: '"'${env_sso_callback//:/\\:}'"',#' /var/www/pialab-front/src/environments/environment.ts
+RUN sed -i 's#^.*connect_url:.*#connect_url: '"'${env_sso_url//:/\\:}'"',#' /var/www/pialab-front/src/environments/environment.ts
+RUN sed -i 's/^.*connect_id:.*/connect_id: '"'$env_sso_connect_id'"',/' /var/www/pialab-front/src/environments/environment.ts
 
 WORKDIR /var/www/pialab-front/
 
