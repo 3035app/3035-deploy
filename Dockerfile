@@ -98,7 +98,7 @@ COPY docker/backcfg/vendor/ /var/www/pialab-back/vendor
 COPY docker/backcfg/.env /var/www/pialab-back
 RUN sed -i 's:^CORS_ALLOW_ORIGIN=.*:CORS_ALLOW_ORIGIN=^'"${env_front//:/\\:}"'*$:' /var/www/pialab-back/.env
 RUN sed -i 's:^MAILER_URL=.*:MAILER_URL='"${env_smtp//:/\\:}"':' /var/www/pialab-back/.env
-RUN sed -i 's:^SNCF_CONNECT_URL=.*:SNCF_CONNECT_URL=^'"${env_sso_url//:/\\:}"'*$:' /var/www/pialab-back/.env
+RUN sed -i 's:^SNCF_CONNECT_URL=.*:SNCF_CONNECT_URL='"${env_sso_url//:/\\:}"':' /var/www/pialab-back/.env
 RUN sed -i 's/^.*SNCF_CONNECT_ID=.*/SNCF_CONNECT_ID='$env_sso_connect_id'/' /var/www/pialab-back/.env
 RUN sed -i 's/^.*SNCF_CONNECT_SECRET=.*/SNCF_CONNECT_SECRET='$env_sso_connect_secret'/' /var/www/pialab-back/.env
 
