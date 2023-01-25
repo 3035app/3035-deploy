@@ -22,7 +22,7 @@ Vous devez par ailleurs avoir à disposition les informations suivantes, qui ser
 cours du déploiement :
 
 * **[TENANT CODE]** :   
-  votre code client, transmis par l'équipe PiaLab
+  votre code client, transmis par l'équipe PiaLab (pour avoir un affichage AIPD/PIA plus que "traitements", entrer "sncf")
 * **[BRANCH RELEASE]** :   
   le nom de la branche à déployer, transmis par l'équipe PiaLab
 * **[SUPER USER USERNAME]** :   
