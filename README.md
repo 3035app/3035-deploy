@@ -60,7 +60,7 @@ dans un répertoire racine (ici `pialab`) :
 Soit via SSH si votre clé publique a été enregistrée sur le dépôt :
 
 ```
-git clone ssh://git@git.pialab.io:2222/pialab/deploy.git \
+git clone ssh://git@git.3035.app:2222/pialab/deploy.git \
   --single-branch \
   --depth 1 \
   --branch master \
@@ -70,7 +70,7 @@ git clone ssh://git@git.pialab.io:2222/pialab/deploy.git \
 Soit par HTTP si vous posséder un compte utilisateur sur le dépôt :
 
 ```
-git clone https://git.pialab.io/pialab/deploy.git \
+git clone https://git.3035.app/pialab/deploy.git \
   --single-branch \
   --depth 1 \
   --branch master \
@@ -83,14 +83,14 @@ veillant à bien préciser le nom de la branche transmise par l'équipe Pialab :
 * `cd pialab`
 * obtenir le code _front_   
   ```
-  git clone ssh://git@git.pialab.io:2222/pialab/front.git \
+  git clone ssh://git@git.3035.app:2222/pialab/front.git \
     --single-branch \
     --depth 1 \
     --branch [BRANCH RELEASE]
   ```
 * obtenir le code _back_   
   ```
-  git clone ssh://git@git.pialab.io:2222/pialab/back.git \
+  git clone ssh://git@git.3035.app:2222/pialab/back.git \
     --single-branch \
     --depth 1 \
     --branch [BRANCH RELEASE]
@@ -211,14 +211,14 @@ transmise par l'équipe Pialab :
 
 * obtenir le code _front_   
   ```
-  git clone ssh://git@git.pialab.io:2222/pialab/front.git \
+  git clone ssh://git@git.3035.app:2222/pialab/front.git \
     --single-branch \
     --depth 1 \
     --branch [BRANCH RELEASE]
   ```
 * obtenir le code _back_   
   ```
-  git clone ssh://git@git.pialab.io:2222/pialab/back.git \
+  git clone ssh://git@git.3035.app:2222/pialab/back.git \
     --single-branch \
     --depth 1 \
     --branch [BRANCH RELEASE]
